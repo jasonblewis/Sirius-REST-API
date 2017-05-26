@@ -1,0 +1,64 @@
+* Sirius REST API
+  a rest api for accessing sirius
+* things to consider:
+  - routes or resources
+  - authentication
+
+* what should the sales order (so) api do?
+  - create new order
+  - edit order
+  - finalise order
+  - delete order - remove completely? or mark as deleted?
+    both cases need confirmation from the user
+  - view orders and status of orders
+  - add order line
+  - delete order line
+  - update order line
+  - view order lines
+  - mass insert order lines
+  - insert bundles of products
+  - what to do if user tries to insert same product twice into order?
+    interaction with user. ask what to do/ display and confirm.
+    
+  - select order lines from old/other orders
+    also, how to protect user from inserting order history more than once? what to do?
+    
+  - 
+  
+* so orders
+** top level order
+   GET /so/orders - list of orders
+     parameters like USER, Date interval
+   POST /so/orders - create a new order
+     parameters: dont know yet
+     returns /so/order/{order-id}
+     status (like 201 for example)
+   PUT/PATCH /so/orders - update an order
+     PUT requires the whole record, and will relplace what is on the server
+     PATCH only requires the fields that need to be updated on the server
+     
+   finalise - same as PUT/PATCH 
+   DELETE /so/orders/{order-id} - delete an order 
+** order lines
+   see http://www.restapitutorial.com/lessons/restfulresourcenaming.html
+
+   GET /so/orders/:order_id/line_items - return all order lines
+   GET /so/orders/:order_id/line_items/:line_id ID USER-NUMBER order (ie concatenate order source with order number)
+
+   bulk inserting lines requires further consideration. one at a time or multiple resources created?
+   see https://stackoverflow.com/questions/11121728/create-single-and-multiple-resources-using-restful-http
+
+   POST /so/orders/:order_id/line_items - insert new order line
+     Parameters: product code - mandatory
+               qty - not required. user could want to insert the line and update qty later
+               note - allow user to enter notes per order line
+     Results:  201 created. return line to resource, ie /so/orders/:order_id/line_items/:line_id
+   PUT/PATCH /so/orders/:order_id/line_items/:line_id
+     Parameters: eg qty  - change the qty ordered
+                    note - update the line note
+                    {qty: 10, note: "some cool note"}
+     do we allow other users to modify orders? check owner of order etc. prevent modification or orders while other users are working on an order
+   DELETE /so/orders/:order_id/line_items/:line_id
+     delete the line item
+     does that mean really delete it or just mark as deleted? i think really delete it.
+   
