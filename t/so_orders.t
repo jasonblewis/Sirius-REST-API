@@ -39,6 +39,7 @@ my $order = from_json($res->content);
 diag("res->content:", $order);
 diag('order->{order_source}',$order->{order_source},'|');
 ok($order->{order_source} eq $order_params->{order_source}, "order_source is what we created");
+ok($order->{record_no} =~ /^[0-9]+$/, "order number is a number");
 #ok($order->{record_no} eq '148135', "record_no is 148135");
 
 
