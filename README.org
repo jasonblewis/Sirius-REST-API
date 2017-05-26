@@ -29,6 +29,8 @@
 ** top level order
    GET /so/orders - list of orders
      parameters like USER, Date interval
+   GET /so/orders/:id - get the order
+   how do we pass in the user and the order id? concatenate?
    POST /so/orders - create a new order
      parameters: dont know yet
      returns /so/order/{order-id}

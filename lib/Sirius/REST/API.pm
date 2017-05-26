@@ -1,6 +1,6 @@
 package Sirius::REST::API;
 use Dancer2;
-use Sirius::REST::API::Orders;
+use Sirius::REST::API::SO::Orders;
 
 our $VERSION = '0.1';
 

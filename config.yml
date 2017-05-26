@@ -20,33 +20,13 @@ charset: "UTF-8"
 
 template: "simple"
 
-# template: "template_toolkit"
-# engines:
-#   template:
-#     template_toolkit:
-#       start_tag: '<%'
-#       end_tag:   '%>'
+plugins:
+  DBIC:
+    default:
+      dsn: 'sirius'
+      schema_class: Reports::Schema
+      options:
+        on_connect_do: 'Set transaction isolation level read uncommitted;'
+        LongReadLen: 500000
+        LongTruncOk: 1
 
-# session engine
-#
-# Simple: in-memory session store - Dancer2::Session::Simple
-# YAML: session stored in YAML files - Dancer2::Session::YAML
-#
-# Check out metacpan for other session storage options:
-# https://metacpan.org/search?q=Dancer2%3A%3ASession&search_type=modules
-#
-# Default value for 'cookie_name' is 'dancer.session'. If you run multiple
-# Dancer apps on the same host then you will need to make sure 'cookie_name'
-# is different for each app.
-#
-#engines:
-#  session:
-#    Simple:
-#      cookie_name: testapp.session
-#
-#engines:
-#  session:
-#    YAML:
-#      cookie_name: eshop.session
-#      is_secure: 1
-#      is_http_only: 1
