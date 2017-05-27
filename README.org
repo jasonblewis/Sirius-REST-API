@@ -44,7 +44,7 @@
 ** order lines
    see http://www.restapitutorial.com/lessons/restfulresourcenaming.html
    and http://www.restapitutorial.com/lessons/httpmethods.html
-   GET /so/orders/:order_id/line_items - return all order lines
+   GET /so/orders/:order_source/:record_number/line_items - return all order lines
    GET /so/orders/:order_id/line_items/:line_id ID USER-NUMBER order (ie concatenate order source with order number)
 
    bulk inserting lines requires further consideration. one at a time or multiple resources created?
