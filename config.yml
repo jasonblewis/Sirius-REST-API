@@ -29,4 +29,7 @@ plugins:
         on_connect_do: 'Set transaction isolation level read uncommitted;'
         LongReadLen: 500000
         LongTruncOk: 1
+  DataTransposeValidator:
+    rules_class: Sirius::REST::API::ValidationRules
+
 

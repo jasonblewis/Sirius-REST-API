@@ -2,12 +2,15 @@ package Sirius::REST::API::SO::Orders;
 
 use Dancer2 appname => 'Sirius::REST::API';
 use Dancer2::Plugin::DBIC;
+use Dancer2::Plugin::DataTransposeValidator;
 use Data::Dumper;
 
 prefix '/so/orders' => sub {
+  post '' => \&post_so_orders;
   get '' => \&get_so_orders;
   get '/:order_source/:record_no' => \&get_so_order;
-  post '' => \&post_so_orders;
+  patch '' => sub { status 405 };
+  patch '/:order_source/:record_no' => \&patch_so_order;
   del '' => sub { status 405 };
   del '/:order_source/:record_no' => \&delete_so_order;
 };
@@ -79,9 +82,9 @@ sub delete_so_order() {
 
   # check if order exists:
   
-  my $result = schema->resultset('ZzSoEpsOrderStaging')->search(
+  my $result = schema->resultset('ZzSoEpsOrderStaging')->search({
     'record_no' => $record_no,
-    'order_source' => $order_source,
+    'order_source' => $order_source,}
   )->first;
   if ($result) {
     $result->delete;
@@ -90,5 +93,33 @@ sub delete_so_order() {
     status 404;
   }
 };
+
+sub patch_so_order() {
+  my $order_source = route_parameters->get('order_source');
+  my $record_no = route_parameters->get('record_no');
+  my $params = body_parameters->as_hashref;
+
+    my $rs = schema->resultset('ZzSoEpsOrderStaging')->search({
+    'record_no' => $record_no,
+    'order_source' => $order_source,}
+  )->first;
+  unless ($rs) {
+    status 404;
+    return;
+  } else {
+    my $data = validator($params,'order');
+    if ($data->{valid}) {
+      # we have valid data - ok to update
+      $rs->update( {
+        notes => $data->{notes},
+      });
+      return;
+    } else {
+      status 422;
+      return;
+    } 
+  }
+
+}
 
 true;

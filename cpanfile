@@ -1,4 +1,6 @@
 requires "Dancer2" => "0.205000";
+requires "Dancer2::Plugin::DataTransposeValidator";
+requires "Data::Random::String";
 
 recommends "YAML"             => "0";
 recommends "URL::Encode::XS"  => "0";
