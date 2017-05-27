@@ -43,7 +43,7 @@
    DELETE /so/orders/{order-id} - delete an order 
 ** order lines
    see http://www.restapitutorial.com/lessons/restfulresourcenaming.html
-
+   and http://www.restapitutorial.com/lessons/httpmethods.html
    GET /so/orders/:order_id/line_items - return all order lines
    GET /so/orders/:order_id/line_items/:line_id ID USER-NUMBER order (ie concatenate order source with order number)
 
@@ -63,4 +63,10 @@
    DELETE /so/orders/:order_id/line_items/:line_id
      delete the line item
      does that mean really delete it or just mark as deleted? i think really delete it.
-   
+* authentication
+  - OAuth
+  - JSON Web Tokens
+* todo
+  find a way to delete order lines when you delete an order
+
+

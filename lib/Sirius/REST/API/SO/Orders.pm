@@ -4,6 +4,14 @@ use Dancer2 appname => 'Sirius::REST::API';
 use Dancer2::Plugin::DBIC;
 use Data::Dumper;
 
+prefix '/so/orders' => sub {
+  get '' => \&get_so_orders;
+  get '/:order_source/:record_no' => \&get_so_order;
+  post '' => \&post_so_orders;
+  del '' => sub { status 405 };
+  del '/:order_source/:record_no' => \&delete_so_order;
+};
+
 sub zz_next_number {
   my $sql = 'exec zz_next_number';
   my $dbh = schema->storage->dbh;
@@ -12,12 +20,6 @@ sub zz_next_number {
   my $number = $sth->fetch()->[0];
   $sth->finish;
   return $number;
-};
-
-prefix '/so/orders' => sub {
-  get '' => \&get_so_orders;
-  get '/:order_source/:record_no' => \&get_so_order;
-  post '' => \&post_so_orders;
 };
 
 sub get_so_orders() {
@@ -42,9 +44,6 @@ sub get_so_order() {
     return {};
   }
 }
-
-
-
 
 sub post_so_orders() {
   my $zz_next_number = zz_next_number;
@@ -74,5 +73,22 @@ sub post_so_orders() {
   return {};
 };
 
+sub delete_so_order() {
+  my $order_source = route_parameters->get('order_source');
+  my $record_no = route_parameters->get('record_no');
+
+  # check if order exists:
+  
+  my $result = schema->resultset('ZzSoEpsOrderStaging')->search(
+    'record_no' => $record_no,
+    'order_source' => $order_source,
+  )->first;
+  if ($result) {
+    $result->delete;
+    return;
+  } else {
+    status 404;
+  }
+};
 
 true;
