@@ -9,9 +9,9 @@ prefix '/so/orders' => sub {
   post '' => \&post_so_orders;
   get '' => \&get_so_orders;
   get '/:order_source/:record_no' => \&get_so_order;
-  patch '' => sub { status 405 };
+  patch '' => sub { status 405; return };
   patch '/:order_source/:record_no' => \&patch_so_order;
-  del '' => sub { status 405 };
+  del '' => sub { status 405 ; return};
   del '/:order_source/:record_no' => \&delete_so_order;
 };
 
@@ -50,7 +50,6 @@ sub get_so_order() {
 
 sub post_so_orders() {
   my $zz_next_number = zz_next_number;
-  debug "zz_next_number:", $zz_next_number;
   my $code = 'ABCXYZ';
   my $customer_name = 'Jason Lewis';
   # insert into the zz_order table:
@@ -68,7 +67,6 @@ sub post_so_orders() {
     number_of_lines    => 0,
     order_created_flag => 'N',
   });
-  debug "order->id: ",$order->id, ref($order->id);
   status 201;
   my $location = uri_for('/so/orders/' . $order->order_source . '/' . $order->record_no);
   response_header 'Location' => $location;
@@ -91,6 +89,7 @@ sub delete_so_order() {
     return;
   } else {
     status 404;
+    return;
   }
 };
 

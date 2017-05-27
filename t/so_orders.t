@@ -27,11 +27,6 @@ $res = $test->request(POST '/so/orders',
 
 ok( $res->is_success, 'post to /so/orders to create an order' )
   || BAIL_OUT("could not create an order");
-my $content = from_json($res->content);
-diag ("res->content:", $content);
-diag ("res->as_string:", $res->as_string);
-
-
 ok( $res->header('Location'), "test location header exists after post" );
 
 # now get location to see if new order was added
@@ -40,8 +35,6 @@ $res = $test->request(GET $location);
 ok( $res->is_success, 'GET order we just created')
   || BAIL_OUT("could not retreive order we just created");
 my $order = from_json($res->content);
-diag("res->content:", $order);
-diag('order->{order_source}',$order->{order_source},'|');
 ok($order->{order_source} eq $order_params->{order_source}, "order_source is what we created");
 ok($order->{record_no} =~ /^[0-9]+$/, "order number is a number");
 
@@ -73,7 +66,6 @@ $res = $test->request(PATCH $location,
 );
 ok($res->code == 422,'patch/update order with invalid note')
  || diag("wrong resonse code from failed patch:",$res->code);
-diag("content",$res->content);
 my $error = from_json($res->content);
 ok($error->{notes} eq 'Notes must be at least 2 characters long', "check patch/update validation message")
   || diag("got wrong validation message");
@@ -85,7 +77,6 @@ ok($res->is_success, 'can delete order we just created');
 # check order was deleted
 $res = $test->request(GET $location);
 ok( $res->code == 404, 'order we just deleted does not exist any more');
-diag("resp>content:", from_json($res->content));
 
 # test deleting whole collection - should return 405 Method not Allowed
 $res = $test->request(DELETE '/so/orders');
@@ -96,14 +87,12 @@ ok( $res->code == 405, 'try deleting whole collection of so orders');
 $res = $test->request(GET '/so/orders/CHARMA/148135');
 ok( $res->is_success, 'GET a single order /so/orders/CHARMA/148135');
 $order = from_json($res->content);
-diag("res->content:", $order);
 ok($order->{order_source} eq 'CHARMA', "order_source is CHARMA");
 ok($order->{record_no} eq '148135', "record_no is 148135");
 
 # test we get 404 if not found
 $res = $test->request(GET '/so/orders/XYZABC/148135');
 ok( $res->code == 404, 'try to get invalid order');
-diag("resp>content:", from_json($res->content));
 
 
 
