@@ -115,7 +115,7 @@ sub patch_so_order() {
       return;
     } else {
       status 422;
-      return;
+      return $data->{errors};
     } 
   }
 
