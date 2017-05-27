@@ -98,6 +98,7 @@ sub patch_so_order() {
   my $order_source = route_parameters->get('order_source');
   my $record_no = route_parameters->get('record_no');
   my $params = body_parameters->as_hashref;
+  debug "body parameters:",$params;
 
     my $rs = schema->resultset('ZzSoEpsOrderStaging')->search({
     'record_no' => $record_no,
@@ -108,10 +109,11 @@ sub patch_so_order() {
     return;
   } else {
     my $data = validator($params,'order');
+    debug "data parameters:",$data;
     if ($data->{valid}) {
       # we have valid data - ok to update
       $rs->update( {
-        notes => $data->{notes},
+        notes => $data->{values}->{notes},
       });
       return;
     } else {
