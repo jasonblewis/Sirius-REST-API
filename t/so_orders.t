@@ -59,12 +59,20 @@ ok($res->is_success,'patch/update order')
 # check notes were updated to what we think they should be updated to
 $res = $test->request(GET $location);
 ok( $res->is_success, 'get order we just updated');
-diag("content",$res->content);
+#diag("content",$res->content);
 $order = from_json($res->content);
 ok( $order->{notes} eq $random_string, 'notes stored in order matches random string');
 
-
 # ensure we can't update notes to 1 or 2 characters. validation rule should prevent this
+my $patch_params = {
+  notes =>  '1',
+};
+$res = $test->request(PATCH $location,
+                      'Content-Type' => 'application/json',
+                      'Content'      => to_json($patch_params),
+);
+ok($res->code == 422,'patch/update order with invalid note') 
+ || diag("wrong resonse code from failed patch:",$res->code);
 
 # now try and delete the added order
 $res = $test->request(DELETE $location);
