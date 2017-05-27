@@ -19,7 +19,11 @@ ok( $res->is_success, 'get all /so/orders successful')
 
 
 # test posting - create new order
-my $order_params = {order_source => 'jason'};
+my $order_params = {
+  order_source => 'jason',
+  customer_code => 'JASLEW',
+  customer_name => 'Jason Lewis',
+};
 $res = $test->request(POST '/so/orders',
                        'Content-Type' => 'application/json',
                        'Content'      => to_json($order_params),
@@ -36,6 +40,8 @@ ok( $res->is_success, 'GET order we just created')
   || BAIL_OUT("could not retreive order we just created");
 my $order = from_json($res->content);
 ok($order->{order_source} eq $order_params->{order_source}, "order_source is what we created");
+ok($order->{customer_code} eq $customer_params->{customer_code}, "customer_code is what we created");
+ok($order->{customer_name} eq $customer_params->{customer_name}, "customer_name is what we created");
 ok($order->{record_no} =~ /^[0-9]+$/, "order number is a number");
 
 # try updating notes in order we just created

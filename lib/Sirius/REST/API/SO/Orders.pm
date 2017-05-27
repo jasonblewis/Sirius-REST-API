@@ -5,6 +5,8 @@ use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::DataTransposeValidator;
 use Data::Dumper;
 
+use Sirius::REST::API::Utils qw/zz_next_number/;
+
 prefix '/so/orders' => sub {
   post '' => \&post_so_orders;
   get '' => \&get_so_orders;
@@ -13,16 +15,6 @@ prefix '/so/orders' => sub {
   patch '/:order_source/:record_no' => \&patch_so_order;
   del '' => sub { status 405 ; return};
   del '/:order_source/:record_no' => \&delete_so_order;
-};
-
-sub zz_next_number {
-  my $sql = 'exec zz_next_number';
-  my $dbh = schema->storage->dbh;
-  my $sth = $dbh->prepare($sql) or die "cant prepare\n";
-  $sth->execute() or die $sth->errstr;
-  my $number = $sth->fetch()->[0];
-  $sth->finish;
-  return $number;
 };
 
 sub get_so_orders() {
@@ -46,21 +38,22 @@ sub get_so_order() {
     status 404;
     return {};
   }
-}
+};
 
 sub post_so_orders() {
-  my $zz_next_number = zz_next_number;
-  my $code = 'ABCXYZ';
-  my $customer_name = 'Jason Lewis';
+
+  my $order_params = body_parameters->as_hashref;
+  my $order_data = validator($order_params,'so_order');
+  my $zz_next_number = zz_next_number(schema);
   # insert into the zz_order table:
   my $order = schema->resultset('ZzSoEpsOrderStaging')->create({
-    order_source       => 'jason',
+    order_source       => $order_data->{order_source},
     record_no          => $zz_next_number,
     u_version          => '!',
-    customer_code      => $code,
-    our_cust_code      => $code,
+    customer_code      => $order_data->{customer_code},
+    our_cust_code      => $order_data->{customer_code},
     cust_order_date    => \'getdate()',
-    customer_name      => $customer_name,
+    customer_name      => $order_data->{customer_name},
     branch_code        => 'A',    # always A according to Jason Lewis
     cust_order_nr      => 'eps order',
     urgent_flag        => 'N',
@@ -105,7 +98,7 @@ sub patch_so_order() {
     status 404;
     return;
   } else {
-    my $data = validator($params,'order');
+    my $data = validator($params,'so_order');
     if ($data->{valid}) {
       # we have valid data - ok to update
       $rs->update( {

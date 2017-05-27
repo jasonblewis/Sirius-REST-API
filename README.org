@@ -67,6 +67,7 @@
   - OAuth
   - JSON Web Tokens
 * todo
-  find a way to delete order lines when you delete an order
-
+  - find a way to delete order lines when you delete an order
+  - make sure when inserting orders, that a customer exists for order's customer code.
+    see: https://metacpan.org/source/HORNBURG/Interchange6-Schema-0.133/lib/Interchange6/Schema/Result/Message.pm#L427
 
